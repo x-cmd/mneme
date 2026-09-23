@@ -104,6 +104,132 @@ If you're unsure whether a change is content-only, it isn't —
 default to opening an issue first or moving the discussion to
 the private notes.
 
+## Topic-library convention (`x-cmd/<topic>`)
+
+Several public repos in this org are **topic libraries**
+hosted at `x-cmd.com/<topic>`. They are open, content-only,
+and accept **modification PRs** from anyone. The canonical
+references are `x-cmd/cve` and `x-cmd/gpg`; the running list
+includes `x-cmd/terminal`, `x-cmd/browser`, `x-cmd/ghclaw`,
+`x-cmd/seo`, and any future `<topic>` repo.
+
+### File layout (every topic repo)
+
+```
+x-cmd/<topic>/
+├── README.md                 # English front-of-page intro
+├── README.cn.md              # Chinese version of the README
+├── CONTRIBUTING.md           # article workflow + frontmatter spec + FAQ schema
+├── SKILL.md                  # AI-agent recipe (YAML frontmatter + 4 sections)
+├── LICENSE                   # Apache-2.0 (or per-repo variant)
+└── docs/
+    ├── 0-<slug>.en.md        # English article
+    ├── 0-<slug>.cn.md        # Chinese translation
+    ├── 0-<slug>.llms.md      # LLM-friendly summary (YAML frontmatter + flat prose)
+    └── 0-<slug>.faq.yml      # structured bilingual Q&A for FAQ + JSON-LD
+```
+
+Every article slot is **four files, kept in sync**:
+`.en.md`, `.cn.md`, `.llms.md`, `.faq.yml`. If you change one,
+change all four in the same commit.
+
+### Per-file frontmatter convention
+
+- **`.en.md` / `.cn.md`** — YAML frontmatter with `x-title`,
+  `x-desc`, optional `x-sidebar`, `x-keywords`, `x-json-ld`.
+  The `x-json-ld` block declares `@type: TechArticle` plus a
+  `BreadcrumbList` for the section.
+- **`.llms.md`** — `name`, `description`, `type: summary` in
+  frontmatter; flat sections (`core_features`, `highlights`,
+  `use_cases`, `related_resources`, `summary`) in the body.
+- **`.faq.yml`** — top-level `id` (`x-<topic>-<n>-<slug>`),
+  grouped `data[]` with bilingual `question` / `answer`,
+  `confidence` (1–9), and `reference` listing the article
+  files.
+
+### Article ordering convention
+
+The leading integer in the filename is the reading order:
+
+- `0-` — newsletter-style "latest" article (recent releases,
+  trends, breaking changes).
+- `1-` — overview + horizontal comparison (one comparison
+  table across the main alternatives).
+- `2-…` — per-tool deep dives (one article per notable
+  project, four files per slot).
+
+Landing-page repos (`x-cmd/ghclaw` is the example) use only
+a `0-<slug>-landing` slot and skip the multi-article layout.
+Other topic repos should follow the full convention unless
+they have a reason not to.
+
+### `AGENTS.md` and `CONTRIBUTING.md` are single-file, English
+
+Both `AGENTS.md` (cross-repo) and `CONTRIBUTING.md` (per-repo)
+are kept as **a single English file each**. Do **not** create
+`AGENTS.cn.md` or `CONTRIBUTING.cn.md` — the convention is
+`README.md` + `README.cn.md` only, and agents read English.
+
+## Cross-repo coordination
+
+When several repos are in play:
+
+1. **`x-cmd/install`** — YAML install database (drives
+   `x install <name>`).
+2. **`x-cmd-install/<software>`** — one **collector** per
+   software; an empty repo (no source code) running
+   `x-cmd-install/x-cmd-install-action@main` on cron;
+   auto-updates `data/`. Manual edits are overwritten.
+3. **`x-cmd-install/x-cmd-install-stat`** — aggregator;
+   walks every collector, writes `stat/<software>/`.
+4. **`x-cmd-install/x-cmd-install-action`** — the reusable
+   Action invoked by every collector.
+5. **`x-cmd-install/x-cmd-install`** — internal "truth"
+   repo; long-form docs, draft YAMLs, vendored sources.
+6. **`x-cmd-install/mneme`** — **private** internal notes
+   scoped to `x-cmd-install` privacy only. Public agents
+   must not write here.
+
+The `x-cmd/cve` and `x-cmd/gpg` repos are the canonical
+references for the **topic-library** pattern. Their
+`docs/` directory trees (4-tuple files, integer-prefixed
+filenames) are the template any new `x-cmd/<topic>` repo
+should copy.
+
+## Build-and-push flow
+
+For a new public repo:
+
+```sh
+mkdir -p ~/.x-repo/github.com/x-cmd/<repo>
+cd ~/.x-repo/github.com/x-cmd/<repo>
+git init -q
+git config user.name "Li Junhao"
+git config user.email "l@x-cmd.com"
+gh repo create x-cmd/<repo> --public --description "<desc>"
+# The repo is created on GitHub; the local remote origin may
+# already exist from a prior clone. Reset it explicitly:
+git remote remove origin
+git remote add origin https://github.com/x-cmd/<repo>.git
+# Then write files, then:
+git add -A
+git -c user.name="Li Junhao" -c user.email="l@x-cmd.com" \
+  commit -m "<content-only message>"
+git push -u origin main
+```
+
+Notes:
+
+- `gh repo create --push` fails when a local `origin`
+  already exists; the `remote remove` + `remote add`
+  sequence is the workaround.
+- After the first push, subsequent commits use plain
+  `git push` (the tracking branch is set by `-u`).
+- One article per commit (or one logical group) makes the
+  diff reviewable; do not accumulate large local stacks.
+- Use English commit messages describing **what changed**,
+  not **why we decided to**.
+
 ## What the agent does
 
 1. **Read this file first** to pick the right sibling repo.
@@ -154,4 +280,9 @@ merge conflicts. New repos should copy that marker pattern.
 - [`x-cmd/install/AGENTS.md`](https://github.com/x-cmd/install/blob/main/AGENTS.md) — install-database agent rules.
 - [`x-cmd/cve/SKILL.md`](https://github.com/x-cmd/cve/blob/main/SKILL.md) — CVE / CWE consumption patterns.
 - [`x-cmd/gpg/SKILL.md`](https://github.com/x-cmd/gpg/blob/main/SKILL.md) — GPG keyring consumption patterns.
+- [`x-cmd/terminal/SKILL.md`](https://github.com/x-cmd/terminal/blob/main/SKILL.md) — terminal topic library.
+- [`x-cmd/browser/SKILL.md`](https://github.com/x-cmd/browser/blob/main/SKILL.md) — browser topic library.
+- [`x-cmd/ghclaw`](https://github.com/x-cmd/ghclaw) — GitHub event claw design (landing-page style).
+- [`x-cmd/seo/SKILL.md`](https://github.com/x-cmd/seo/blob/main/SKILL.md) — SEO topic library.
 - [`x-cmd/x-cmd`](https://github.com/x-cmd/x-cmd) — module source (`mod/`).
+- [`x-cmd-install/mneme/AGENT.md`](https://github.com/x-cmd-install/mneme) — private, x-cmd-install-scoped notes.
