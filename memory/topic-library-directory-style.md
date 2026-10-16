@@ -17,16 +17,47 @@ published at `x-cmd.com/<repo-name>/<slug>/` (the VitePress
 consumer in an external repo reads the docs/ tree and serves
 it under that path).
 
+**doc-2026 URL stripping rules** (consumer collapses these
+intermediate path segments — they exist on disk but NOT in URL):
+
+- `install/<cat>/<slug>/` → `x-cmd.com/install/<slug>/`
+  (`<cat>` is internal organization only; example:
+  `data/install/web-browser/chrome/` → `x-cmd.com/install/chrome/`)
+- `mod/<module>/<n>/` → `x-cmd.com/mod/<module>/<n>/`
+  (`<module>` is internal; the `<n>` is kept because it is the
+  article identifier within the module — modules have multiple
+  numbered cookbook articles)
+
+**doc-2026 URL preserving rules:**
+
+- `pkg/<cat>/<slug>/` → `x-cmd.com/pkg/<cat>/<slug>/` (cat kept)
+- `start/<cat>/<n>-<name>/` → `x-cmd.com/start/<cat>/<n>-<name>/`
+  (cat kept)
+- `ai/0-overview/<file>/` → `x-cmd.com/ai/<file>/`
+- `theme/0-overview/<file>/` → `x-cmd.com/theme/<file>/`
+- `action/0-overview/<n>-<name>/` → `x-cmd.com/action/<n>-<name>/`
+  (`0-overview/` is **not** a category — it's an internal naming
+  convention to mark "the overview/index section" of a topic.
+  Each `<file>` / `<n>-<name>` under it is a real article.)
+- `root/<slug>/` → `x-cmd.com/<slug>/` (no topic prefix)
+
 | Repo | Source | Served at | Notes |
 | --- | --- | --- | --- |
-| `x-cmd/gpg` | `gpg/docs/<slug>/{cn,en,llms}.md + faq.yml` | `x-cmd.com/gpg/<slug>/` | |
+| `x-cmd/gpg` | `gpg/docs/<slug>/...` | `x-cmd.com/gpg/<slug>/` | |
 | `x-cmd/seo` | `seo/docs/<slug>/...` | `x-cmd.com/seo/<slug>/` | |
-| `x-cmd/cve` | `cve/docs/<slug>/...` | `x-cmd.com/cve/<slug>/` | daily-refreshed TSV data lives in `cve/data/`, separate from docs |
+| `x-cmd/cve` | `cve/docs/<slug>/...` | `x-cmd.com/cve/<slug>/` | daily TSV data in `cve/data/`, separate |
 | `x-cmd/ratelimit` | `ratelimit/docs/<slug>/...` | `x-cmd.com/ratelimit/<slug>/` | |
-| `x-cmd/uptime` | `uptime/docs/<slug>/...` | `x-cmd.com/uptime/<slug>/` | reference implementation |
-| `x-cmd/dns` | `dns/docs/<slug>/...` | `x-cmd.com/dns/<slug>/` | dev happens on `feat/*` branches |
-| `x-cmd/doc-2026` | `data/{install,mod,pkg,start,ai,root,theme,action}/...` | `x-cmd.com/{install,mod,pkg,start,ai,root,theme,action}/...` | multiple sub-trees, see [[x-cmd-content-tree-layout]] if it exists |
-| `x-cmd/mneme` | `memory/<topic>.md` | **not deployed** | org map + agent memory; AI agents read directly from `main` / `agent-notes-dnrs` |
+| `x-cmd/uptime` | `uptime/docs/<slug>/...` | `x-cmd.com/uptime/<slug>/` | reference impl |
+| `x-cmd/dns` | `dns/docs/<slug>/...` | `x-cmd.com/dns/<slug>/` | dev on `feat/*` branches |
+| `x-cmd/doc-2026` | `data/install/<cat>/<slug>/...` | `x-cmd.com/install/<slug>/` | `<cat>` stripped |
+| `x-cmd/doc-2026` | `data/mod/<module>/<n>/...` | `x-cmd.com/mod/<module>/<n>/` | `<module>` stripped |
+| `x-cmd/doc-2026` | `data/pkg/<cat>/<slug>/<n>-<lang}.md` | `x-cmd.com/pkg/<cat>/<slug>/` | `<cat>` kept |
+| `x-cmd/doc-2026` | `data/start/<cat>/<n>-<name>/...` | `x-cmd.com/start/<cat>/<n>-<name>/` | `<cat>` kept |
+| `x-cmd/doc-2026` | `data/ai/<file>/` (lives under `0-overview/` on disk) | `x-cmd.com/ai/<file>/` | `0-overview/` stripped |
+| `x-cmd/doc-2026` | `data/theme/<file>/` (lives under `0-overview/` on disk) | `x-cmd.com/theme/<file>/` | `0-overview/` stripped |
+| `x-cmd/doc-2026` | `data/action/<n>-<name>/` (lives under `0-overview/` on disk) | `x-cmd.com/action/<n>-<name>/` | `0-overview/` stripped |
+| `x-cmd/doc-2026` | `data/root/<slug>/` | `x-cmd.com/<slug>/` | direct under root |
+| `x-cmd/mneme` | `memory/<topic>.md` | **not deployed** | org map + agent memory; AI agents read from `main` / `agent-notes-dnrs` |
 
 **Why:**
 
