@@ -10,6 +10,24 @@ its own folder as `cn.md` / `en.md` / `llms.md` / `faq.yml`. The
 folder name carries the slug; the filenames have no `<slug>.`
 prefix.
 
+**Deployment (where each repo's docs land):**
+
+The folder name IS the URL slug. Each public topic repo is
+published at `x-cmd.com/<repo-name>/<slug>/` (the VitePress
+consumer in an external repo reads the docs/ tree and serves
+it under that path).
+
+| Repo | Source | Served at | Notes |
+| --- | --- | --- | --- |
+| `x-cmd/gpg` | `gpg/docs/<slug>/{cn,en,llms}.md + faq.yml` | `x-cmd.com/gpg/<slug>/` | |
+| `x-cmd/seo` | `seo/docs/<slug>/...` | `x-cmd.com/seo/<slug>/` | |
+| `x-cmd/cve` | `cve/docs/<slug>/...` | `x-cmd.com/cve/<slug>/` | daily-refreshed TSV data lives in `cve/data/`, separate from docs |
+| `x-cmd/ratelimit` | `ratelimit/docs/<slug>/...` | `x-cmd.com/ratelimit/<slug>/` | |
+| `x-cmd/uptime` | `uptime/docs/<slug>/...` | `x-cmd.com/uptime/<slug>/` | reference implementation |
+| `x-cmd/dns` | `dns/docs/<slug>/...` | `x-cmd.com/dns/<slug>/` | dev happens on `feat/*` branches |
+| `x-cmd/doc-2026` | `data/{install,mod,pkg,start,ai,root,theme,action}/...` | `x-cmd.com/{install,mod,pkg,start,ai,root,theme,action}/...` | multiple sub-trees, see [[x-cmd-content-tree-layout]] if it exists |
+| `x-cmd/mneme` | `memory/<topic>.md` | **not deployed** | org map + agent memory; AI agents read directly from `main` / `agent-notes-dnrs` |
+
 **Why:**
 
 - One slug = one folder. Browser-friendly URLs land on the
