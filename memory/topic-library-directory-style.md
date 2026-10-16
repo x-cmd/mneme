@@ -23,7 +23,7 @@ intermediate path segments — they exist on disk but NOT in URL):
 - `install/<cat>/<slug>/` → `x-cmd.com/install/<slug>/`
   (`<cat>` is internal organization only; example:
   `data/install/web-browser/chrome/` → `x-cmd.com/install/chrome/`)
-- `mod/<module>/<n>/` → `x-cmd.com/mod/<module>/<n>/`
+- `mod/<module>/<n>/` → `x-cmd.com/mod/<module>/cookbook-<n>/` (`<n>` 在 URL 里重命名为 `cookbook-<n>`)
   (`<module>` is internal; the `<n>` is kept because it is the
   article identifier within the module — modules have multiple
   numbered cookbook articles)
@@ -50,7 +50,7 @@ intermediate path segments — they exist on disk but NOT in URL):
 | `x-cmd/uptime` | `uptime/docs/<slug>/...` | `x-cmd.com/uptime/<slug>/` | reference impl |
 | `x-cmd/dns` | `dns/docs/<slug>/...` | `x-cmd.com/dns/<slug>/` | dev on `feat/*` branches |
 | `x-cmd/doc-2026` | `data/install/<cat>/<slug>/...` | `x-cmd.com/install/<slug>/` | `<cat>` stripped |
-| `x-cmd/doc-2026` | `data/mod/<module>/<n>/...` | `x-cmd.com/mod/<module>/<n>/` | `<module>` stripped |
+| `x-cmd/doc-2026` | `data/mod/<module>/<n>/...` | `x-cmd.com/mod/<module>/cookbook-<n>/` | `<module>` stripped, `<n>` 重命名为 `cookbook-<n>` |
 | `x-cmd/doc-2026` | `data/pkg/<cat>/<slug>/<n>-<lang}.md` | `x-cmd.com/pkg/<cat>/<slug>/` | `<cat>` kept |
 | `x-cmd/doc-2026` | `data/start/<cat>/<n>-<name>/...` | `x-cmd.com/start/<cat>/<n>-<name>/` | `<cat>` kept |
 | `x-cmd/doc-2026` | `data/ai/<file>/` (lives under `0-overview/` on disk) | `x-cmd.com/ai/<file>/` | `0-overview/` stripped |
@@ -116,7 +116,7 @@ on re-run via `[ -e src ]` check.
 | `x-cmd/doc-2026/data/install/<cat>/<slug>/` | ~2000 | migrated (`1084eea8`) |
 | `x-cmd/doc-2026/data/root/<slug>/` | 8 | migrated (`1084eea8`) |
 | `x-cmd/doc-2026/data/ai/0-overview/<file>/` | 4 | migrated (`839059fd`) |
-| `x-cmd/doc-2026/data/mod/<module>/<n>/` | 175 | migrated (`947543a9`) |
+| `x-cmd/doc-2026/data/mod/<module>/<n>/` | 175 | migrated (`947543a9`); URL: `x-cmd.com/mod/<module>/cookbook-<n>/` |
 | `x-cmd/doc-2026/data/start/<cat>/<n>-<name>/` | ~14 | migrated (`947543a9`) |
 | `x-cmd/doc-2026/data/theme/0-overview/<n>-<name>/` | 7 | migrated (`947543a9`) |
 | `x-cmd/doc-2026/data/action/0-overview/<n>-<name>/` | 6 | migrated (`947543a9`) |
