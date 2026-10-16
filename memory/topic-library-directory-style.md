@@ -17,6 +17,27 @@ published at `x-cmd.com/<repo-name>/<slug>/` (the VitePress
 consumer in an external repo reads the docs/ tree and serves
 it under that path).
 
+**Language -> URL host/path mapping:**
+
+- **English (default):** `x-cmd.com/<topic>/<slug>/`
+- **Simplified Chinese (zh-CN):** `cn.x-cmd.com/<topic>/<slug>/` (subdomain)
+- **Traditional Chinese (zh-HK):** `hk.x-cmd.com/<topic>/<slug>/` (subdomain)
+- **Other languages (es/de/jp/...):** `x-cmd.com/<lang>/<topic>/<slug>/` (path prefix)
+
+So a single article `data/install/web-browser/chrome/cn.md` serves
+at **three** different URLs depending on the reader's locale:
+
+  - `x-cmd.com/install/chrome/`         (English default)
+  - `cn.x-cmd.com/install/chrome/`      (Simplified Chinese)
+  - `hk.x-cmd.com/install/chrome/`      (Traditional Chinese)
+  - `x-cmd.com/es/install/chrome/`      (Spanish, lang-prefixed)
+  - `x-cmd.com/de/install/chrome/`      (German)
+  - `x-cmd.com/jp/install/chrome/`      (Japanese)
+
+The cn/hk subdomain pattern is asymmetric to the other-language
+path-prefix pattern: cn/hk articles share the same path as English,
+only the host differs.
+
 **doc-2026 URL stripping rules** (consumer collapses these
 intermediate path segments — they exist on disk but NOT in URL):
 
